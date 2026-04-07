@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCHNR Spotify Pro</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --sp-green: #1DB954; --sp-black: #121212; --sp-grey: #282828; }
+        body { background-color: var(--sp-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .pro-badge { background: var(--sp-green); color: black; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .search-box { background: var(--sp-grey); border: none; width: 100%; padding: 12px; border-radius: 8px; color: white; margin-bottom: 20px; outline: none; }
+        .track-card { background: var(--sp-grey); padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; transition: 0.3s; }
+        .track-card:active { transform: scale(0.98); }
+        .track-info b { display: block; font-size: 16px; }
+        .track-info small { color: #b3b3b3; }
+        .controls { display: flex; align-items: center; gap: 15px; }
+        .heart { font-size: 22px; cursor: pointer; transition: 0.3s; }
+        .heart.active { color: var(--sp-green); }
+        .play-btn { background: var(--sp-green); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>LCHNR Music</h2>
+        <div class="pro-badge">PRO PLAN</div>
+    </div>
+
+    <input type="text" class="search-box" placeholder="🔍 Пошук треків, артистів...">
+
+    <div id="app-content">
+        <div class="track-card">
+            <div class="track-info">
+                <b>Night Drive (JDM Edit)</b>
+                <small>Phonk Killer</small>
+            </div>
+            <div class="controls">
+                <div class="heart" onclick="this.classList.toggle('active')">❤️</div>
+                <button class="play-btn" onclick="sendToBot('Night Drive Phonk Killer')">▶️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.MainButton.setText("ЗАКРИТИ ПЛЕЄР").show();
+        tg.MainButton.onClick(() => tg.close());
+
+        function sendToBot(trackName) {
+            // Ця функція відправляє назву треку назад боту
+            tg.sendData(trackName);
+            tg.close();
+        }
+    </script>
+</body>
+</html>
