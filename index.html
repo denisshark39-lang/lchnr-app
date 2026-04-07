@@ -6,88 +6,85 @@
     <title>LCHNR Spotify Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --green: #1DB954; --black: #121212; --grey: #181818; --light-grey: #282828; }
-        body { background: var(--black); color: white; font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        :root { --green: #1DB954; --black: #0a0a0a; --grey: #1a1a1a; --card: #222; }
+        body { background: var(--black); color: white; font-family: 'Inter', -apple-system, sans-serif; margin: 0; padding: 0; user-select: none; }
         
-        /* Дизайн під Spotify */
-        .header { padding: 20px; background: linear-gradient(to bottom, #333, var(--black)); }
-        .pro-label { background: var(--green); color: black; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; float: right; }
-        .search-container { padding: 0 20px; }
-        .search-input { background: var(--light-grey); border: none; width: 100%; padding: 14px 20px; border-radius: 30px; color: white; outline: none; box-sizing: border-box; font-size: 16px; border: 1px solid transparent; transition: 0.3s; }
-        .search-input:focus { border-color: var(--green); background: #333; }
+        .header { padding: 30px 20px 10px; background: linear-gradient(180deg, #222 0%, var(--black) 100%); }
+        .pro-badge { background: var(--green); color: black; padding: 3px 10px; border-radius: 5px; font-size: 11px; font-weight: 800; float: right; letter-spacing: 1px; }
 
-        /* Список треків */
-        .section-title { padding: 20px; font-size: 20px; font-weight: bold; }
-        .track-list { padding: 0 15px 100px 15px; }
-        .track-item { display: flex; align-items: center; padding: 12px; border-radius: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.03); transition: 0.2s; }
-        .track-item:active { background: var(--light-grey); transform: scale(0.98); }
-        .track-img { width: 48px; height: 48px; border-radius: 6px; background: #333; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .search-container { padding: 0 20px; margin-top: 10px; }
+        .search-input { background: var(--grey); border: 1px solid #333; width: 100%; padding: 15px 20px; border-radius: 12px; color: white; outline: none; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+        .search-input:focus { border-color: var(--green); box-shadow: 0 0 10px rgba(29, 185, 84, 0.2); }
+
+        .section-title { padding: 25px 20px 10px; font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .track-list { padding: 0 15px 120px; }
+        .track-item { display: flex; align-items: center; padding: 12px; border-radius: 12px; margin-bottom: 8px; background: var(--card); transition: 0.2s; border: 1px solid transparent; }
+        .track-item:active { transform: scale(0.97); background: #2a2a2a; }
+        
+        .track-img { width: 52px; height: 52px; border-radius: 8px; background: linear-gradient(45deg, #333, #111); margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
         .track-info { flex-grow: 1; }
-        .track-info b { display: block; font-size: 15px; margin-bottom: 2px; }
-        .track-info span { color: #b3b3b3; font-size: 13px; }
-        .controls { display: flex; align-items: center; gap: 15px; }
-        .heart-btn { font-size: 20px; color: #555; cursor: pointer; }
-        .heart-btn.active { color: var(--green); }
-        .play-btn { color: var(--green); font-size: 26px; cursor: pointer; }
+        .track-info b { display: block; font-size: 15px; margin-bottom: 3px; }
+        .track-info span { color: #888; font-size: 13px; }
+        
+        .play-icon { color: var(--green); font-size: 24px; }
 
-        /* Плеєр внизу */
-        .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #282828; padding: 12px 20px; border-top: 1px solid #000; display: flex; align-items: center; justify-content: space-between; border-radius: 15px 15px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+        .player-footer { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(20,20,20,0.95); backdrop-filter: blur(10px); padding: 15px 25px; border-top: 1px solid #222; display: flex; align-items: center; justify-content: space-between; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="pro-label">PRO PLAN</div>
-    <h2 style="margin: 0;">LCHNR Music</h2>
+    <div class="pro-badge">PRO PLAN</div>
+    <h1 style="margin: 0; font-size: 26px;">LCHNR Music</h1>
 </div>
 
 <div class="search-container">
-    <input type="text" class="search-input" id="searchInput" placeholder="Введи назву треку і тисни Enter...">
+    <input type="text" class="search-input" id="searchInput" placeholder="Яку пісню знайти, Бос?">
 </div>
 
 <div class="section-title">Твій плейлист</div>
 
-<div class="track-list" id="trackList">
-    <div class="track-item" onclick="sendAction('play:Night Drive - Phonk Killer')">
+<div class="track-list">
+    <div class="track-item" onclick="sendToBot('play:Night Drive - Phonk Killer')">
         <div class="track-img">🏎️</div>
         <div class="track-info">
             <b>Night Drive (JDM Edit)</b>
             <span>Phonk Killer</span>
         </div>
-        <div class="controls">
-            <div class="heart-btn" onclick="event.stopPropagation(); sendAction('fav:Night Drive')">❤️</div>
-            <div class="play-btn">▶️</div>
+        <div class="play-icon">▶️</div>
+    </div>
+    
+    <div class="track-item" onclick="sendToBot('play:Madison Beer - Reckless')">
+        <div class="track-img">✨</div>
+        <div class="track-info">
+            <b>Reckless</b>
+            <span>Madison Beer</span>
         </div>
+        <div class="play-icon">▶️</div>
     </div>
 </div>
 
-<div class="player-bar">
-    <div style="display: flex; align-items: center;">
-        <div style="font-size: 13px;">
-            <b id="activeTrack">Очікування запиту...</b><br>
-            <small style="color: var(--green);">Spotify Engine v8.1</small>
-        </div>
+<div class="player-footer">
+    <div>
+        <small style="color: var(--green); font-weight: bold; font-size: 10px;">LCHNR ECOSYSTEM</small><br>
+        <span id="activeTrack" style="font-size: 14px;">Ready to drift...</span>
     </div>
-    <div style="font-size: 22px;">⏭️</div>
+    <div style="font-size: 22px;">🎧</div>
 </div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
-    tg.MainButton.setText("ЗАКРИТИ").show().onClick(() => tg.close());
+    tg.MainButton.setText("ЗАКРИТИ ПЛЕЄР").show().onClick(() => tg.close());
 
-    // Обробка пошуку через Enter
-    document.getElementById('searchInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            let val = this.value.trim();
-            if (val) {
-                tg.sendData("search:" + val);
-            }
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && searchInput.value.trim()) {
+            tg.sendData("search:" + searchInput.value.trim());
         }
     });
 
-    // Універсальна функція відправки даних боту
-    function sendAction(data) {
+    function sendToBot(data) {
         tg.sendData(data);
     }
 </script>
