@@ -2,57 +2,107 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LCHNR Spotify Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --sp-green: #1DB954; --sp-black: #121212; --sp-grey: #282828; }
-        body { background-color: var(--sp-black); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .pro-badge { background: var(--sp-green); color: black; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .search-box { background: var(--sp-grey); border: none; width: 100%; padding: 12px; border-radius: 8px; color: white; margin-bottom: 20px; outline: none; }
-        .track-card { background: var(--sp-grey); padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; transition: 0.3s; }
-        .track-card:active { transform: scale(0.98); }
-        .track-info b { display: block; font-size: 16px; }
-        .track-info small { color: #b3b3b3; }
-        .controls { display: flex; align-items: center; gap: 15px; }
-        .heart { font-size: 22px; cursor: pointer; transition: 0.3s; }
-        .heart.active { color: var(--sp-green); }
-        .play-btn { background: var(--sp-green); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        :root { --green: #1DB954; --black: #121212; --grey: #181818; --light-grey: #282828; }
+        body { background: var(--black); color: white; font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+        
+        /* Header */
+        .header { padding: 20px; background: linear-gradient(to bottom, #333, var(--black)); }
+        .pro-label { background: var(--green); color: black; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; float: right; }
+
+        /* Search */
+        .search-container { padding: 0 20px; }
+        .search-input { background: var(--light-grey); border: none; width: 100%; padding: 12px 15px; border-radius: 25px; color: white; outline: none; box-sizing: border-box; font-size: 16px; }
+
+        /* Track List */
+        .section-title { padding: 20px; font-size: 22px; font-weight: bold; }
+        .track-list { padding: 0 15px 100px 15px; }
+        .track-item { display: flex; align-items: center; padding: 10px; border-radius: 8px; margin-bottom: 5px; transition: 0.2s; }
+        .track-item:active { background: var(--light-grey); }
+        .track-img { width: 50px; height: 50px; border-radius: 4px; background: #333; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .track-info { flex-grow: 1; }
+        .track-info b { display: block; font-size: 16px; margin-bottom: 2px; }
+        .track-info span { color: #b3b3b3; font-size: 14px; }
+        .heart-btn { font-size: 20px; margin-right: 15px; color: #b3b3b3; }
+        .heart-btn.active { color: var(--green); }
+        .play-btn { color: var(--green); font-size: 28px; }
+
+        /* Bottom Player Bar */
+        .player-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #282828; padding: 10px 20px; border-top: 1px solid #000; display: flex; align-items: center; justify-content: space-between; border-radius: 15px 15px 0 0; }
+        .nav-tabs { position: fixed; bottom: 65px; left: 0; right: 0; display: flex; justify-content: space-around; background: rgba(18,18,18,0.9); padding: 10px 0; border-top: 0.5px solid #333; }
+        .nav-item { color: #b3b3b3; font-size: 12px; text-align: center; text-decoration: none; }
+        .nav-item.active { color: white; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h2>LCHNR Music</h2>
-        <div class="pro-badge">PRO PLAN</div>
+
+<div class="header">
+    <div class="pro-label">PRO PLAN</div>
+    <h2 style="margin: 0;">LCHNR Music</h2>
+</div>
+
+<div class="search-container">
+    <input type="text" class="search-input" id="searchInput" placeholder="Шукати пісні, JDM мікси...">
+</div>
+
+<div class="section-title">Твій плейлист</div>
+
+<div class="track-list" id="trackList">
+    <div class="track-item" onclick="playTrack('Night Drive - Phonk Killer')">
+        <div class="track-img">🏎️</div>
+        <div class="track-info">
+            <b>Night Drive (JDM Edit)</b>
+            <span>Phonk Killer</span>
+        </div>
+        <div class="heart-btn" onclick="toggleHeart(event, this)">❤️</div>
+        <div class="play-btn">▶️</div>
     </div>
+</div>
 
-    <input type="text" class="search-box" placeholder="🔍 Пошук треків, артистів...">
+<div class="nav-tabs">
+    <div class="nav-item active">🏠<br>Головна</div>
+    <div class="nav-item">🔍<br>Пошук</div>
+    <div class="nav-item">📚<br>Бібліотека</div>
+</div>
 
-    <div id="app-content">
-        <div class="track-card">
-            <div class="track-info">
-                <b>Night Drive (JDM Edit)</b>
-                <small>Phonk Killer</small>
-            </div>
-            <div class="controls">
-                <div class="heart" onclick="this.classList.toggle('active')">❤️</div>
-                <button class="play-btn" onclick="sendToBot('Night Drive Phonk Killer')">▶️</button>
-            </div>
+<div class="player-bar">
+    <div style="display: flex; align-items: center;">
+        <div style="font-size: 14px;">
+            <b id="currentTrack">Не вибрано</b><br>
+            <small style="color: #b3b3b3;">LCHNR Stream</small>
         </div>
     </div>
+    <div style="font-size: 24px;">⏭️</div>
+</div>
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.MainButton.setText("ЗАКРИТИ ПЛЕЄР").show();
-        tg.MainButton.onClick(() => tg.close());
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
 
-        function sendToBot(trackName) {
-            // Ця функція відправляє назву треку назад боту
-            tg.sendData(trackName);
-            tg.close();
+    // Пошук при натисканні Enter
+    document.getElementById('searchInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            let q = this.value;
+            if(q) tg.sendData("search:" + q);
         }
-    </script>
+    });
+
+    function playTrack(name) {
+        document.getElementById('currentTrack').innerText = name;
+        // Відправляємо назву боту, щоб він скачав/запустив
+        tg.sendData("play:" + name);
+    }
+
+    function toggleHeart(event, el) {
+        event.stopPropagation(); // щоб не спрацював playTrack
+        el.classList.toggle('active');
+        let track = el.parentElement.querySelector('.track-info b').innerText;
+        tg.sendData("fav:" + track);
+    }
+</script>
+
 </body>
 </html>
